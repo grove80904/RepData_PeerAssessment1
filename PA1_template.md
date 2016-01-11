@@ -4,15 +4,16 @@ output: html_document
 ---
 
 ## Install required packages
-```{r echo=TRUE}
+
+```r
 require(knitr)
 require(data.table)
 require(ggplot2)
-
 ```
 
 ## Read/process the data
-```{r echo=TRUE}
+
+```r
 # Save current working directory to return later
 olddir <- getwd()
 directory <- "./temp"
@@ -32,40 +33,69 @@ a[, steps := as.numeric(steps)]
 ```
 
 ## Create histogram of the total number of steps taken each day
-```{r echo=TRUE}
+
+```r
 # Calculate daily total steps
 histdata <- a[, .(steps.dailytotal = sum(steps, na.rm = T)), by = date]
 # Create histogram of the total number of steps taken each day
 qplot(x = steps.dailytotal, data = histdata, geom = "histogram")
 ```
 
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
 ## Calculate the mean and median number of steps taken each day
-```{r echo=TRUE}
+
+```r
 # Calculate mean and median of total daily steps
 meanmedian <- histdata[, .(mean = mean(steps.dailytotal), median = median(steps.dailytotal))]
 meanmedian
 ```
 
+```
+##       mean median
+## 1: 9354.23  10395
+```
+
 ## Create histogram of the average steps taken during each interval
-```{r echo=TRUE}
+
+```r
 # Calculate average steps by interval
 histdata <- a[, .(steps.intervalmean = mean(steps, na.rm = T)), by = interval]
 # Create histogram of the total number of steps taken each day
 qplot(x = interval, y = steps.intervalmean, data = histdata, geom = "line")
 ```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
 ## Find the interval that, on average, contains the maximum number of steps
-```{r echo=TRUE}
+
+```r
 # Sort the data in ascending order of mean steps per interval
 setkey(histdata, steps.intervalmean)
 # Display the interval with the highest interval mean (last row)
 histdata[.N, interval]
 ```
 
+```
+## [1] 835
+```
+
 ## Identify and impute missing values
-```{r echo=TRUE}
+
+```r
 # Calculate the number of missing values in the data
 sum(!complete.cases(a))
+```
+
+```
+## [1] 2304
+```
+
+```r
 # Sort "histdata" and "a" by interval to join them
 setkey(histdata, interval)
 setkey(a, interval)
@@ -78,20 +108,44 @@ b[, steps.intervalmean := NULL]
 ```
 
 ## Create histogram of the daily steps after missing values are imputed and look at differences in mean and median values
-```{r echo=TRUE}
+
+```r
 # Calculate daily total steps
 histdata <- b[, .(steps.dailytotal = sum(steps, na.rm = T)), by = date]
 # Create histogram of the total number of steps taken each day
 qplot(x = steps.dailytotal, data = histdata, geom = "histogram")
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+
+```r
 # Calculate mean and median of total daily steps
 meanmedianimputed <- histdata[, .(mean = mean(steps.dailytotal), median = median(steps.dailytotal))]
 meanmedianimputed
+```
+
+```
+##        mean   median
+## 1: 10766.19 10766.19
+```
+
+```r
 # calculate the change in mean and median values after imputing missing data
 meanmedianimputed - meanmedian
 ```
 
+```
+##        mean   median
+## 1: 1411.959 371.1887
+```
+
 ## Create panel plot comparing steps/interval across weekdays and weekends
-```{r echo=TRUE}
+
+```r
 # Create factor variable for weekday/weekend
 weekends <- b[, daytype:= "weekday"]
 weekends <- weekends[weekdays(date) %in% c("Saturday", "Sunday"), daytype := "weekend"]
@@ -99,6 +153,11 @@ weekends <- weekends[weekdays(date) %in% c("Saturday", "Sunday"), daytype := "we
 plotdata <- weekends[, .(steps.intervalmean = mean(steps, na.rm = T)), by = .(daytype, interval)]
 # Create histogram of the total number of steps taken each day
 ggplot(plotdata, aes(interval, steps.intervalmean)) + geom_line() + facet_wrap(~daytype, ncol = 1)
+```
+
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+
+```r
 # Return to original working directory
 setwd(olddir)
 ```
