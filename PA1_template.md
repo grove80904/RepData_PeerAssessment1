@@ -1,14 +1,33 @@
----
-title: "Reproducible Research Project 1"
-output: html_document
----
+# Reproducible Research Project 1
 
 ## Install required packages
 
 ```r
 require(knitr)
+```
+
+```
+## Loading required package: knitr
+```
+
+```
+## Warning: package 'knitr' was built under R version 3.2.3
+```
+
+```r
 require(data.table)
+```
+
+```
+## Loading required package: data.table
+```
+
+```r
 require(ggplot2)
+```
+
+```
+## Loading required package: ggplot2
 ```
 
 ## Read/process the data
@@ -45,7 +64,7 @@ qplot(x = steps.dailytotal, data = histdata, geom = "histogram")
 ## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
 
 ## Calculate the mean and median number of steps taken each day
 
@@ -69,7 +88,7 @@ histdata <- a[, .(steps.intervalmean = mean(steps, na.rm = T)), by = interval]
 qplot(x = interval, y = steps.intervalmean, data = histdata, geom = "line")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
 ## Find the interval that, on average, contains the maximum number of steps
 
@@ -120,7 +139,7 @@ qplot(x = steps.dailytotal, data = histdata, geom = "histogram")
 ## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
 
 ```r
 # Calculate mean and median of total daily steps
@@ -155,7 +174,7 @@ plotdata <- weekends[, .(steps.intervalmean = mean(steps, na.rm = T)), by = .(da
 ggplot(plotdata, aes(interval, steps.intervalmean)) + geom_line() + facet_wrap(~daytype, ncol = 1)
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
 
 ```r
 # Return to original working directory
